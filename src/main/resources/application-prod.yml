@@ -3,9 +3,9 @@ spring:
     url: jdbc:postgresql://ep-floral-dream-a5cso3j3-pooler.us-east-2.aws.neon.tech/patho?sslmode=require
     username: patho_owner
     password: npg_bSg2PUezt1xZ
-
+    driver-class-name: org.postgresql.Driver
   jpa:
-    hibernate:
+    properties:
       ddl-auto: update
     show-sql: false
   mvc:
