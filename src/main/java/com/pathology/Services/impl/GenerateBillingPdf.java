@@ -32,7 +32,8 @@ import java.awt.*;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
-import java.util.Arrays;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.List;
 
 
@@ -103,7 +104,8 @@ public class GenerateBillingPdf {
         try {
 //             Set response headers
             response.setContentType("application/pdf");
-            response.setHeader("Content-Disposition", "attachment; filename=cbc_report.pdf");
+            Patient patient = patientService.getByPatientId(patientId);
+            response.setHeader("Content-Disposition", "attachment; filename="+patient.getName()+".pdf");
 
             //
 //            String path = "src\\main\\resources\\static\\cbc.pdf";
@@ -142,7 +144,7 @@ public class GenerateBillingPdf {
                     .setWidth(UnitValue.createPercentValue(100))
                     .setBorder(Border.NO_BORDER);
             //patient details
-            Patient patient = patientService.getByPatientId(patientId);
+
 
             addPatientRow(lhsTable, "Patient Name:", patient.getSrName()+" "+patient.getName());
             addPatientRow(lhsTable, "Age & Sex:", patient.getAge()+" / "+patient.getGender());
@@ -154,11 +156,16 @@ public class GenerateBillingPdf {
             Table rhsTable = new Table(UnitValue.createPercentArray(new float[]{2, 3}))
                     .setWidth(UnitValue.createPercentValue(100))
                     .setBorder(Border.NO_BORDER);
+            LocalDateTime ldt = LocalDateTime.now();
+//            log.info("reporting data is : {}",ldt);
+            String strDate = ldt.toString();
+            String[] dateTime = strDate.split("T");
 
             addPatientRow(rhsTable, "Reporting Date:", ""+patient.getReportingDate());
-            addPatientRow(rhsTable, "Collection Date:", ""+patient.getCollectionDate());
+//            addPatientRow(rhsTable, "Collection Date:", ""+patient.getCollectionDate());
+            addPatientRow(rhsTable, "Collection Date:", dateTime[0]+" "+dateTime[1]);
             addPatientRow(rhsTable, "Referred By:", patient.getRefBy());
-            addPatientRow(rhsTable, "Ref. No.:", "");
+            addPatientRow(rhsTable, "Ref. No.:", ""+patient.getPatientId());
 
 //            addPatientRow(rhsTable, "Reporting Date:", "01-01-2023 2:10 PM");
 //            addPatientRow(rhsTable, "Collection Date:", "01-01-2023 1:03 PM");
@@ -185,29 +192,66 @@ public class GenerateBillingPdf {
 
             addTestHead(cbcTableHead, "Test Name", "Result", "units", "Reference Range", true);
 
-            Table cbcTable = new Table(UnitValue.createPercentArray(new float[]{2, 1, 1, 1}))
-                    .setWidth(UnitValue.createPercentValue(100))
-                    .setBorder(Border.NO_BORDER);
-//                cbcTableHead.addCell("Complete Blood Count (CBC)").setBold().setFontSize(10);
-
-
-            document.add(cbcTableHead);
+//            Table cbcTable = new Table(UnitValue.createPercentArray(new float[]{2, 1, 1, 1}))
+//                    .setWidth(UnitValue.createPercentValue(100))
+//                    .setBorder(Border.NO_BORDER);
+////                cbcTableHead.addCell("Complete Blood Count (CBC)").setBold().setFontSize(10);
+//
+//
+//            document.add(cbcTableHead);
 //            document.add(new Paragraph("COMPLETE BLOOD COUNT"));
 
             //getting data form the testing DB
             List<Test> test = testService.findTestByPatient(patientId);
             logger.info("generating the testing");
 
+            document.add(cbcTableHead);
             for (Test testDetails : test){
                 String testId = testDetails.getTestId();
-                List<SubTest> subTestList = subTestService.findByTestId(testId);
+                List<SubTest> subTestList = new ArrayList<>();
+                subTestList = subTestService.findByTestId(testId);
+
+                Table cbcTable = new Table(UnitValue.createPercentArray(new float[]{2, 1, 1, 1}))
+                        .setWidth(UnitValue.createPercentValue(100))
+                        .setBorder(Border.NO_BORDER);
+//                cbcTableHead.addCell("Complete Blood Count (CBC)").setBold().setFontSize(10);
+
+
+
+
 
                 document.add(new Paragraph(testDetails.getTestName()));
                 for (SubTest subTest: subTestList){
+
                     addTestRow(cbcTable, subTest.getSubTestName(), subTest.getValue(), subTest.getUnits(), subTest.getRangeValue(), false);
+
+//                    document.add(cbcTable);
                 }
+                subTestList.clear();
+
+
                 document.add(cbcTable);
             }
+
+
+
+//            Set<String> processedSubTests = new HashSet<>();
+
+//            for (Test testDetails : test) {
+//                String testId = testDetails.getTestId();
+//                List<SubTest> subTestList = subTestService.findByTestId(testId);
+//
+//                document.add(new Paragraph(testDetails.getTestName()));
+//
+//                for (SubTest subTest : subTestList) {
+//                    if (!processedSubTests.contains(subTest.getSubTestId())) {
+//                        addTestRow(cbcTable, subTest.getSubTestName(), subTest.getValue(), subTest.getUnits(), subTest.getRangeValue(), false);
+//                        processedSubTests.add(subTest.getSubTestId());
+//                    }
+//                }
+//
+//                document.add(cbcTable);
+//            }
 
 //            Test testDetails = testRepository.findById(testId).orElseThrow(() -> new ResourceNotFoundException("the given id is not available on server"));
            /** String testId1 = test.getTestId();

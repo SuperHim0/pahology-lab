@@ -52,4 +52,9 @@ public class SubTestServiceImpl implements SubTestService {
     public List<SubTest> findByTestId(String testId) {
         return subTestRepository.findByTestId(testId);
     }
+
+    @Override
+    public void delete(String subTestId) {
+        subTestRepository.deleteById(subTestId);
+    }
 }

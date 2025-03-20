@@ -7,33 +7,45 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/subtest")
+@RequestMapping("/api")
+@CrossOrigin(origins = "*")
 public class SubTestController {
     @Autowired
     private SubTestService subTestService;
 
-    @PostMapping
+    @PostMapping("/subtest")
     public ResponseEntity<SubTest> create (@RequestBody SubTest subTest){
         return ResponseEntity.status(HttpStatus.CREATED).body(subTestService.create(subTest));
     }
 
-    @GetMapping
+    @GetMapping("/subtest")
     public ResponseEntity<List<SubTest>> getAll(){
         return ResponseEntity.ok(subTestService.getAll());
     }
 
-    @PostMapping("/{subTestId}")
+    @PostMapping("/subtest/{subTestId}")
     public ResponseEntity<SubTest> getById(@PathVariable String subTestId){
         return ResponseEntity.status(HttpStatus.OK).body(subTestService.getById(subTestId));
     }
 
-    @GetMapping("setValue/{subTestId}/{updatedValue}")
-    public ResponseEntity<String> updateValue(@PathVariable String subTestId, @PathVariable String updatedValue){
+    @GetMapping("/subtest/setValue/{subTestId}/{updatedValue}")
+    public ResponseEntity<Map<String, String>> updateValue(@PathVariable String subTestId, @PathVariable String updatedValue){
         subTestService.update(subTestId,updatedValue);
-        return ResponseEntity.ok("updated");
+//        return ResponseEntity.ok("updated");
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "SubTest value updated successfully");
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/delete/{subTestId}")
+    public ResponseEntity<String> deleteSubTest(@PathVariable String subTestId){
+        subTestService.delete(subTestId);
+        return ResponseEntity.ok("Deleted");
     }
 
 }

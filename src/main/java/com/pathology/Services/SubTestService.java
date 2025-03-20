@@ -15,4 +15,6 @@ public interface SubTestService {
     void update (String subTestId,String updatedValue);
 
     List<SubTest> findByTestId(String testId);
+
+    void delete (String subTestId);
 }

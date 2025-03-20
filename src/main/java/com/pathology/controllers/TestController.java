@@ -15,7 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/tests")
+@RequestMapping("/api")
+@CrossOrigin(origins = "*")
 public class TestController {
 
     @Autowired
@@ -23,25 +24,25 @@ public class TestController {
 
     private Logger logger = LoggerFactory.getLogger(TestController.class);
 
-    @PostMapping
+    @PostMapping("/tests")
     public ResponseEntity<Test> create (@RequestBody Test  test){
         logger.info("controller called to create test info:");
         System.out.println(test.getTestName()+" -- > "+test.getRate());
         return ResponseEntity.status(HttpStatus.CREATED).body(testService.create(test));
     }
 
-    @GetMapping
+    @GetMapping("/tests")
     public ResponseEntity<List<Test>> getAll(){
         return ResponseEntity.status(HttpStatus.OK).body(testService.getAll());
     }
 
-    @PostMapping("/{testId}")
+    @PostMapping("/tests/{testId}")
     public ResponseEntity<Test> getById(@PathVariable String testId){
         return ResponseEntity.ok(testService.getById(testId));
     }
 
 
-    @GetMapping("setTest/{patientId}/{testId}")
+    @GetMapping("/tests/setTest/{patientId}/{testId}")
     public ResponseEntity<String> setTestToPatient(@PathVariable String patientId, @PathVariable String testId){
         testService.updatePatientIdIntoTest(patientId,testId);
         return ResponseEntity.status(HttpStatus.UPGRADE_REQUIRED).body("Added");

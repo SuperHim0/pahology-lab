@@ -10,25 +10,26 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/patients")
+@RequestMapping("/api")
+@CrossOrigin(origins = "*")
 public class PatientController {
 
     @Autowired
     private PatientService patientService;
 
     //create patient
-    @PostMapping
+    @PostMapping("/patients")
     public ResponseEntity<Patient> createPatient(@RequestBody Patient patient){
             return ResponseEntity.status(HttpStatus.CREATED).body(patientService.create(patient));
     }
     //getall patient
-    @GetMapping
+    @GetMapping("/patients")
     public ResponseEntity<List<Patient>> getAllPatient(){
         return ResponseEntity.ok(patientService.getAll());
     }
 
     //getby id
-    @PostMapping("/{patientId}")
+    @PostMapping("/patients/{patientId}")
     public ResponseEntity<Patient> getById(@PathVariable String patientId){
         return ResponseEntity.status(HttpStatus.OK).body(patientService.getByPatientId(patientId));
     }
