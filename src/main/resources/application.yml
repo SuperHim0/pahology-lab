@@ -4,14 +4,18 @@ server:
 spring:
   datasource:
 #    url: jdbc:mysql://localhost:3306/pathologylab
-    url: ${DATASOURCE_URL}
-    username: ${DATASOURCE_USERNAME}
-    password: ${DATASOURCE_PASSWORD}
+#    url: jdbc:postgresql://postgres:RzLasTgtVnevsiCAYkIJuewJpHKOBVxT@mainline.proxy.rlwy.net:47796/railway
+##    username: ${DATASOURCE_USERNAME}
+#    username: railway
+#    password: RzLasTgtVnevsiCAYkIJuewJpHKOBVxT
+    url: jdbc:postgresql://ep-floral-dream-a5cso3j3-pooler.us-east-2.aws.neon.tech/patho
+    username: patho_owner
+    password: npg_bSg2PUezt1xZ
 
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
   mvc:
     view:
       prefix: /
